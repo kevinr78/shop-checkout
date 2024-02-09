@@ -1,13 +1,17 @@
 <%- include('../partials/head.ejs') %>
-    </head>
+    <link rel="stylesheet" href="/css/product.css">
+</head>
 
     <body>
         <%- include('../partials/nav.ejs') %>
         <main>
-            <% id(products.length>0) { %>
+            <% if(products.length>0) { %>
                 <ul>
                     <% products.forEach(p=>{ %>
-                        <li><%= p.productData.title %>(<%= p.qty%>)</li>
+                        <li>
+                            <%= p.title %>(<%= p.quantity%>) 
+                             Total Price : Rs. <%= p.totPrice %>
+                        </li>
                     <%})%>
                 </ul>
 

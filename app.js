@@ -14,14 +14,6 @@ app.use(express.static(path.join(__dirname, "public")));
 const routes = require("./routes/admin.js");
 const shop = require("./routes/shop.js");
 
-db.execute("insert into products(null,'GoT', '19.99', 'Game OF thrones')")
-  .then((data) => {
-    console.log(data);
-  })
-  .catch((err) => {
-    console.log(err);
-  });
-
 app.use("/admin", routes);
 app.use("/", shop);
 

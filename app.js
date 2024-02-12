@@ -3,7 +3,7 @@ const path = require("path");
 const app = express();
 const mongoose = require("mongoose");
 const db = require("./util/database.js");
-
+const dotenv = require("dotenv").config();
 app.set("view engine", "ejs");
 app.set("views", "views");
 const User = require("./models/user.model.js");
@@ -24,18 +24,18 @@ app.use((req, res, next) => {
 
 const routes = require("./routes/admin.js");
 const shop = require("./routes/shop.js");
+const authRoutes = require("./routes/auth.js");
 
 app.use("/admin", routes);
 app.use("/", shop);
+app.use("/", authRoutes);
 
 app.use((req, res) => {
   res.render("404", { docTitle: "Page Not found" });
 });
 
 mongoose
-  .connect(
-    "mongodb+srv://kevinR:Kevinr78@notes.rrkkckw.mongodb.net/?retryWrites=true&w=majority"
-  )
+  .connect(process.env.DB_URL)
   .then((result) => {
     User.findOne().then((user) => {
       if (!user) {

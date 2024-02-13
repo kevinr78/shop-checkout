@@ -1,20 +1,28 @@
 const express = require("express");
 const path = require("path");
 const router = express.Router();
-
+const verifyAuth = require("../middleware/verifyAuth");
 const rootDir = require("../util/path");
 const productsController = require("../controllers/products");
 
-router.get("/add-product", productsController.getAddProduct);
+router.get("/add-product", verifyAuth, productsController.getAddProduct);
 
-router.post("/add-product", productsController.postAddProduct);
+router.post("/add-product", verifyAuth, productsController.postAddProduct);
 
-router.get("/products", productsController.getAdminProducts);
+router.get("/products", verifyAuth, productsController.getAdminProducts);
 
-router.get("/edit-product/:productId", productsController.getEditProduct);
+router.get(
+  "/edit-product/:productId",
+  verifyAuth,
+  productsController.getEditProduct
+);
 
-router.post("/edit-product", productsController.postEditProduct);
+router.post("/edit-product", verifyAuth, productsController.postEditProduct);
 
-router.post("/delete-product/:productId", productsController.deleteProduct);
+router.post(
+  "/delete-product/:productId",
+  verifyAuth,
+  productsController.deleteProduct
+);
 
 module.exports = router;

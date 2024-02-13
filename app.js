@@ -1,15 +1,44 @@
 const express = require("express");
-const path = require("path");
-const app = express();
 const mongoose = require("mongoose");
-const db = require("./util/database.js");
+const path = require("path");
+const session = require("express-session");
+const mongoDBStore = require("connect-mongodb-session")(session);
+
+const app = express();
 const dotenv = require("dotenv").config();
+const User = require("./models/user.model.js");
+const db = require("./util/database.js");
+const store = new mongoDBStore({
+  uri: process.env.DB_URL,
+  collection: "sessions",
+});
 app.set("view engine", "ejs");
 app.set("views", "views");
-const User = require("./models/user.model.js");
+
 app.use(express.json({ extended: true }));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
+app.use(
+  session({
+    secret: "my secret",
+    resave: false,
+    saveUninitialized: false,
+    store: store,
+    unset: "destroy",
+  })
+);
+
+app.use((req, res, next) => {
+  if (!req.session.user) {
+    return next();
+  }
+  User.findById(req.session.user._id)
+    .then((user) => {
+      req.user = user;
+      next();
+    })
+    .catch((err) => console.log(err));
+});
 
 app.use((req, res, next) => {
   User.findById("65c7182e9b0ad8c80cb60abf")
@@ -31,26 +60,15 @@ app.use("/", shop);
 app.use("/", authRoutes);
 
 app.use((req, res) => {
-  res.render("404", { docTitle: "Page Not found" });
+  res.render("404", {
+    docTitle: "Page Not found",
+    isAuthenticated: req.isLoggedIn,
+  });
 });
 
 mongoose
   .connect(process.env.DB_URL)
   .then((result) => {
-    User.findOne().then((user) => {
-      if (!user) {
-        const user = new User({
-          name: "Kevin R.",
-          email: "Kevinr@gmail.com",
-          cart: {
-            items: [],
-          },
-        });
-
-        user.save();
-      }
-    });
-
     app.listen(3000, () => {
       console.log("Server is running on port 3000");
     });

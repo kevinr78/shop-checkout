@@ -2,10 +2,14 @@ const Product = require("../models/product.model");
 const Cart = require("../models/cart.model");
 
 exports.getAddProduct = (req, res) => {
+  if (!req.session.isLoggedin) {
+    return res.redirect("/login");
+  }
   res.render("admin/edit-product", {
     docTitle: "Add Product",
     editing: false,
     path: "/admin/edit-product",
+    isAuthenticated: req.isLoggedIn,
   });
 };
 
@@ -25,6 +29,7 @@ exports.getEditProduct = (req, res) => {
       path: "/admin/edit-product",
       editing: editMode,
       product: product,
+      isAuthenticated: req.isLoggedIn,
     });
   });
 };
@@ -57,6 +62,7 @@ exports.getProducts = (req, res, next) => {
       prods: products,
       docTitle: "Shop",
       path: "/",
+      isAuthenticated: req.session.isLoggedIn,
     });
   });
 };
@@ -75,6 +81,7 @@ exports.getAdminProducts = (req, res, next) => {
       prods: products,
       docTitle: "Shop",
       path: "/",
+      isAuthenticated: req.isLoggedIn,
     });
   });
 };
